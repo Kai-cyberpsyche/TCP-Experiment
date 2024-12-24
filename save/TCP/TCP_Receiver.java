@@ -35,7 +35,7 @@ public class TCP_Receiver extends TCP_Receiver_ADT {
             int toACKSequence = -1;
             int currentSequence = recvPack.getTcpH().getTh_seq()/100;
             if(currentSequence >= expected)rcvWnd.add(recvPack);
-            while(!rcvWnd.isEmpty() && expected == rcvWnd.peek().getTcpH().getTh_seq()/100){
+            while(expected == rcvWnd.peek().getTcpH().getTh_seq()/100){
                 expected ++;
                 this.dataQueue.add(rcvWnd.poll().getTcpS().getData());
             }
@@ -46,7 +46,6 @@ public class TCP_Receiver extends TCP_Receiver_ADT {
 
             // 回复 ACK 报文段
             reply(this.ackPack);
-            if(this.dataQueue.size() > 20)deliver_data();
         }
     }
 
