@@ -10,7 +10,7 @@ public class SenderSlidingWindow {
     private Client client;
     public int cwnd = 1;
     private volatile int ssthresh = 16;
-    private int count = 0;  // 拥塞避免： cwmd = cwmd + 1 / cwnd，每一个对新包的 ACK count++，所以 count == cwmd 时，cwnd = cwnd + 1
+    private int count = 0; 
     private Hashtable<Integer, TCP_PACKET> packets = new Hashtable<>();
     private UDT_Timer timer;
     private int lastACKSequence = -1;
@@ -114,14 +114,12 @@ public class SenderSlidingWindow {
 
         List sequenceList = new ArrayList(this.packets.keySet());
         Collections.sort(sequenceList);
-
-        for (int i = 0; i < this.cwnd && i < sequenceList.size(); i++) {
-            TCP_PACKET packet = this.packets.get(sequenceList.get(i));
-            if (packet != null) {
-                System.out.println("retransmit: " + (packet.getTcpH().getTh_seq() - 1) / 100);
-                this.client.send(packet);
-            }
+        TCP_PACKET packet = this.packets.get(sequenceList.get(0));
+        if (packet != null) {
+            System.out.println("retransmit: " + (packet.getTcpH().getTh_seq() - 1) / 100);
+            this.client.send(packet);
         }
+
 
         if (this.packets.size() != 0) {
             this.timer = new UDT_Timer();
