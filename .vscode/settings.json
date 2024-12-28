@@ -1,0 +1,8 @@
+{
+    "java.project.sourcePaths": [
+        "src"
+    ],
+    "java.project.referencedLibraries": [
+        "/home/kai/Documents/TCP-Experiment/lib/TCP_TestSys_Linux.jar"
+    ]
+}

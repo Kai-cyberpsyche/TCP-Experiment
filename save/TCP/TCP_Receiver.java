@@ -4,14 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-<<<<<<< HEAD
-import java.util.Comparator;
-import java.util.PriorityQueue;
-=======
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
->>>>>>> 5be021620fb39ed96b96e8aeadf33af872a4f792
 
 import com.ouc.tcp.client.TCP_Receiver_ADT;
 import com.ouc.tcp.message.*;
@@ -19,27 +14,16 @@ import com.ouc.tcp.message.*;
 public class TCP_Receiver extends TCP_Receiver_ADT {
 
     private TCP_PACKET ackPack;  // 回复的 ACK 报文段
-<<<<<<< HEAD
-    
-    private int expected;
-    private PriorityQueue<TCP_PACKET> buffer;
-=======
     private int expected;
     private PriorityQueue<TCP_PACKET> rcvWnd;
->>>>>>> 5be021620fb39ed96b96e8aeadf33af872a4f792
 
 
     public TCP_Receiver() {
         super();  // 调用超类构造函数
         super.initTCP_Receiver(this);  // 初始化 TCP 接收端
-<<<<<<< HEAD
-        this.expected = 0;
-        buffer = new PriorityQueue<>((x, y) ->  Integer.compare(x.getTcpH().getTh_seq(), y.getTcpH().getTh_seq()));
-=======
         this.dataQueue = new LinkedBlockingQueue();
         expected = 0;
         rcvWnd = new PriorityQueue<>((x, y)-> Integer.compare(x.getTcpH().getTh_seq(), y.getTcpH().getTh_seq()));
->>>>>>> 5be021620fb39ed96b96e8aeadf33af872a4f792
     }
 
     /**
@@ -49,25 +33,11 @@ public class TCP_Receiver extends TCP_Receiver_ADT {
     public void rdt_recv(TCP_PACKET recvPack) {
         if (CheckSum.computeChkSum(recvPack) == recvPack.getTcpH().getTh_sum()) {
             int toACKSequence = -1;
-<<<<<<< HEAD
-            int currentSequence = recvPack.getTcpH().getTh_seq() /100;
-            // try {
-            //     toACKSequence = this.window.receivePacket(recvPack.clone());
-            // } catch (CloneNotSupportedException e) {
-            //     e.printStackTrace();
-            // }
-            if(currentSequence >= expected)buffer.add(recvPack);
-            while(!buffer.isEmpty() && buffer.peek().getTcpH().getTh_seq() == expected * 100 + 1){
-                expected ++;
-                this.dataQueue.add(buffer.poll().getTcpS().getData());
-                if(dataQueue.size() > 20)deliver_data();
-=======
             int currentSequence = recvPack.getTcpH().getTh_seq()/100;
             if(currentSequence >= expected)rcvWnd.add(recvPack);
-            while(!rcvWnd.isEmpty() && expected == rcvWnd.peek().getTcpH().getTh_seq()/100){
+            while(expected == rcvWnd.peek().getTcpH().getTh_seq()/100){
                 expected ++;
                 this.dataQueue.add(rcvWnd.poll().getTcpS().getData());
->>>>>>> 5be021620fb39ed96b96e8aeadf33af872a4f792
             }
             toACKSequence = expected -1;
             this.tcpH.setTh_ack(toACKSequence * 100 + 1);
@@ -76,7 +46,6 @@ public class TCP_Receiver extends TCP_Receiver_ADT {
 
             // 回复 ACK 报文段
             reply(this.ackPack);
-            if(this.dataQueue.size() > 20)deliver_data();
         }
     }
 
